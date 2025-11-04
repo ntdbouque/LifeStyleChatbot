@@ -1,0 +1,26 @@
+services:
+  LLM: 
+    model_service: ollama
+    model_name: mistral:latest
+
+  embed_model:
+    model_service: OpenAI
+    model_name: text-embedding-large-3
+  postgres: 
+    URI: postgresql://admin:admin123@localhost:56432/mydb
+  qdrant: 
+    URI: http://localhost:56333
+  loki: 
+    URI: http://localhost:56310
+  grafana: 
+    URI: http://localhost:56300
+  ollama: 
+    URI: http://localhost:56800
+  backend: 
+    URI: http://localhost:8386
+  frontend: 
+    URI: http://localhost:8387
+
+RAG: 
+  qdrant:
+    collection_name: hypertension_docs
