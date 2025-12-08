@@ -1,23 +1,30 @@
 services:
-  LLM: 
-    model_service: ollama
-    model_name: mistral:latest
+  vllm:
+    URI: http://localhost:8100/v1          # endpoint OpenAI-compatible
+    model_name: meta-llama/Meta-Llama-3-8B-Instruct
+    api_key: "EMPTY"                      
+    temperature: 0.7
+    max_tokens: 1024
 
   embed_model:
     model_service: OpenAI
     model_name: text-embedding-large-3
+
   postgres: 
     URI: postgresql://admin:admin123@localhost:56432/mydb
+
   qdrant: 
     URI: http://localhost:56333
+
   loki: 
     URI: http://localhost:56310
+
   grafana: 
     URI: http://localhost:56300
-  ollama: 
-    URI: http://localhost:56800
+
   backend: 
     URI: http://localhost:8386
+    
   frontend: 
     URI: http://localhost:8387
 

@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  # Tự monitor chính Prometheus
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['DuyPrometheus:9090']
+
+  # Lấy CPU, RAM, disk... từ node-exporter
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['DuyNodeExporter:9100']
