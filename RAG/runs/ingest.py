@@ -57,8 +57,6 @@ client = QdrantClient(url=QDRANT_URL)
 # ===============================
 
 
-
-
 vector_store = Qdrant(
     client=client,
     collection_name=COLLECTION_NAME,

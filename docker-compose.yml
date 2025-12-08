@@ -3,7 +3,7 @@ version: "3.9"
 services:
   postgres:
     image: postgres:15
-    container_name: Duy_mc_postgres
+    container_name: DuyPostgres
     restart: always
     environment:
       POSTGRES_USER: admin
@@ -12,47 +12,74 @@ services:
     ports:
       - "56432:5432"
     volumes:
-      - ./volumnes/postgres:/var/lib/postgresql/data
+      - ./volumes/postgres:/var/lib/postgresql/data
+    networks:
+      - monitoring
 
   qdrant:
     image: qdrant/qdrant
-    container_name: Duy_mc_qdrant
+    container_name: DuyQdrant
     restart: always
     ports:
       - "56333:6333"
       - "56334:6334"
     volumes:
-      - ./volumnes/qdrant:/qdrant/storage
-
-  loki:
-    image: grafana/loki:2.9.0
-    container_name: Duy_mc_loki
-    restart: always
-    command: -config.file=/etc/loki/local-config.yaml
-    ports:  
-      - "56310:3100"
-    volumes:
-      - ./volumnes/loki:/loki
+      - ./volumes/qdrant:/qdrant/storage
+    networks:
+      - monitoring
 
   grafana:
     image: grafana/grafana
-    container_name: Duy_mc_grafana
+    container_name: DuyGrafana
     restart: always
     ports:
       - "56300:3000"
     depends_on:
       - loki
+      - prometheus
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
     volumes:
-      - ./volumnes/grafana:/var/lib/grafana
+      - ./volumes/grafana:/var/lib/grafana
+    user: "root"
+    networks:
+      - monitoring
 
-  ollama:
-    image: ollama/ollama
-    container_name: Duy_mc_ollama
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: DuyPrometheus
     restart: always
     ports:
-      - "56800:11434"
+      - "56320:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
     volumes:
-      - ./volumnes/ollama:/root/.ollama
+      - ./configs/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./volumes/prometheus:/prometheus
+    user: "root"  
+    networks:
+      - monitoring
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: DuyNodeExporter
+    restart: always
+    ports:
+      - "56330:9100"
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    user: "root"
+    networks:
+      - monitoring
+
+networks:
+  monitoring:

@@ -69,4 +69,4 @@ def run_app(username):
             {"role": "assistant", "content": full_response}
         )
 
-run_app("user_36")
+run_app("test1")
